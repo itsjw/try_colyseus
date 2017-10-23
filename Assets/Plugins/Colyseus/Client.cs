@@ -91,6 +91,26 @@ namespace Colyseus
 			}
 		}
 
+
+		public Room Join<T>(string roomName, Dictionary<string, object> options = null) where T : class
+		{
+			if (options == null)
+			{
+				options = new Dictionary<string, object>();
+			}
+
+			int requestId = ++this.joinRequestId;
+			options.Add("requestId", requestId);
+
+			var room = new Room(roomName);
+			this.connectingRooms.Add(requestId, room);
+
+			this.connection.Send(new object[] { Protocol.JOIN_ROOM, roomName, options });
+
+			return room;
+
+		}
+
 		/// <summary>
 		/// Request <see cref="Client"/> to join in a <see cref="Room"/>.
 		/// </summary>
