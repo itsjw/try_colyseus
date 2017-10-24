@@ -18,6 +18,8 @@ public class ColyseusClient : MonoBehaviour {
 	// map of players
 	Dictionary<string, GameObject> players = new Dictionary<string, GameObject>();
 
+    public GameRoom gameRoom;
+
 	// Use this for initialization
 	IEnumerator Start () {
 
@@ -28,7 +30,8 @@ public class ColyseusClient : MonoBehaviour {
 
 		yield return StartCoroutine(client.Connect());
 
-		room = client.Join(roomName);
+        //room = client.Join(roomName);
+        room = client.JoinWithType<GameRoom>(roomName);
 		room.OnReadyToConnect += (sender, e) => StartCoroutine ( room.Connect() );
 		room.OnJoin += OnRoomJoined;
 		room.OnUpdate += OnUpdateHandler;
@@ -84,6 +87,9 @@ public class ColyseusClient : MonoBehaviour {
 
 	void OnUpdateHandler (object sender, RoomUpdateEventArgs e)
 	{
+
+        GameRoom room = (GameRoom) e.room;
+
 		// Setup room first state
 		if (e.isFirstState) {
 			IndexedDictionary<string, object> players = (IndexedDictionary<string, object>) e.state ["players"];
