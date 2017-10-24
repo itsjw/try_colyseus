@@ -51,6 +51,11 @@ namespace Colyseus
 		/// </summary>
 		public event EventHandler<RoomUpdateEventArgs> OnUpdate;
 
+        /// <summary>
+        /// The type to deserialize for MessageEventArgs
+        /// </summary>
+        public Type deserializeType;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Room"/> class.
 		/// It synchronizes state automatically with the server and send and receive messaes.
@@ -59,9 +64,10 @@ namespace Colyseus
 		/// The <see cref="Client"/> client connection instance.
 		/// </param>
 		/// <param name="name">The name of the room</param>
-		public Room (String name)
+		public Room (String name, Type deserializeType = null)
 			: base(new IndexedDictionary<string, object>())
 		{
+            this.deserializeType = deserializeType;
 			this.name = name;
 		}
 
@@ -95,7 +101,7 @@ namespace Colyseus
 			MsgPack.Serialize (state, serializationOutput);
 
 			if (this.OnUpdate != null)
-				this.OnUpdate.Invoke(this, new RoomUpdateEventArgs(state, true));
+                this.OnUpdate.Invoke(this, new RoomUpdateEventArgs(state, true, deserializeType:deserializeType));
 
 			this._previousState = serializationOutput.ToArray();
 		}
@@ -178,7 +184,17 @@ namespace Colyseus
 			this.Set(newState);
 
 			if (this.OnUpdate != null)
-				this.OnUpdate.Invoke(this, new RoomUpdateEventArgs(this.data));
+                this.OnUpdate.Invoke(this, new RoomUpdateEventArgs(this.data, deserializeType:deserializeType));
 		}
 	}
+}
+
+/// <summary>
+/// Game room. For testing.
+/// </summary>
+public class GameRoom
+{
+
+    public string RoomName;
+
 }
