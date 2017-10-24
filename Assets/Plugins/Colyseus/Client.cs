@@ -133,26 +133,6 @@ namespace Colyseus
 			return room;
 		}
 
-		public Room JoinWithType<T>(string roomName, Dictionary<string, object> options = null) where T : class
-		{
-			if (options == null)
-			{
-				options = new Dictionary<string, object>();
-			}
-
-			int requestId = ++this.joinRequestId;
-			options.Add("requestId", requestId);
-
-			var room = new Room(roomName);
-            room.deserialzieType = typeof(T);
-
-			this.connectingRooms.Add(requestId, room);
-
-			this.connection.Send(new object[] { Protocol.JOIN_ROOM, roomName, options });
-
-			return room;
-		}
-
         void ParseMessage (byte[] recv)
 		{
 			var message = MsgPack.Deserialize<List<object>> (new MemoryStream(recv));
