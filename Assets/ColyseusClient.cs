@@ -41,7 +41,7 @@ public class ColyseusClient : MonoBehaviour {
 		room.Listen ("players/:id", this.OnPlayerChange);
 		room.Listen ("players/:id/:axis", this.OnPlayerMove);
 		room.Listen ("messages/:number", this.OnMessageAdded);
-		room.Listen (this.OnChangeFallback);
+        room.Listen ("roomname/:name", this.OnRoomNameAdded); 
 
 		room.OnData += (object sender, MessageEventArgs e) => Debug.Log(e.data);
 
@@ -163,6 +163,13 @@ public class ColyseusClient : MonoBehaviour {
 		Debug.Log (change.path["number"]);
 		Debug.Log (change.value);
 	}
+
+    void OnRoomNameAdded(DataChange change){
+
+		Debug.Log("OnRommNameAdded");
+		Debug.Log(change.path["name"]);
+		Debug.Log(change.value);
+    }
 
 	void OnChangeFallback (PatchObject change)
 	{

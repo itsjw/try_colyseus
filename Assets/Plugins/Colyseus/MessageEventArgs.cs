@@ -41,6 +41,27 @@ namespace Colyseus
 		}
 	}
 
+    public class JoinEventArgs : EventArgs{
+
+		public static object Deserialize(Type objectType, IndexedDictionary<string, object> state = null)
+		{
+
+			//Not sure what this part is suppose to do with state, just copied from issue#24 to show maybe it should work like this.
+			var outputStream = new System.IO.MemoryStream();
+			MsgPack.Serialize(state, outputStream);
+			outputStream.Position = 0;
+			var room = MsgPack.Deserialize(objectType, outputStream);
+
+			return room;
+		}
+
+        public string roomname;
+
+        public JoinEventArgs(string name){
+            
+        }
+    }
+
 	/// <summary>
 	/// Room Update Message
 	/// </summary>

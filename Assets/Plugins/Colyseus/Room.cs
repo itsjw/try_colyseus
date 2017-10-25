@@ -195,6 +195,6 @@ namespace Colyseus
 public class GameRoom
 {
 
-    public string RoomName;
+    public string roomName;
 
 }
