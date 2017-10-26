@@ -8,7 +8,10 @@ const PORT = process.env.PORT || 3553;
 const gameServer = new ClusterServer();
 
 // Register ChatRoom as "chat"
-gameServer.register("chat", ChatRoom);
+//gameServer.register("chat", ChatRoom);
+
+gameServer.register("chat", ChatRoom, {maxClients: 2});
+
 
 if (cluster.isMaster) {
     gameServer.listen(PORT);

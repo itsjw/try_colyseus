@@ -13,15 +13,20 @@ class ChatRoom extends Room {
   }
 
   onInit (options) {
+    this.options = options;
+
     this.setPatchRate( 1000 / 20 );
     this.setSimulationInterval( this.update.bind(this) );
 
     console.log("ChatRoom created!", options);
+
+
   }
 
   requestJoin (options) {
     console.log("request join!", options);
-    return true;
+    return this.state.players.length < this.options.maxClients;
+  //  return true;
   }
 
   onJoin (client) {

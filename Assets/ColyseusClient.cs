@@ -34,6 +34,7 @@ public class ColyseusClient : MonoBehaviour {
 		//room = client.Join(roomName);
 		room = client.JoinWithType<GameRoom>(roomName);
 
+
 		room.OnReadyToConnect += (sender, e) => StartCoroutine ( room.Connect() );
 		room.OnJoin += OnRoomJoined;
 		room.OnUpdate += OnUpdateHandler;
@@ -41,7 +42,7 @@ public class ColyseusClient : MonoBehaviour {
 		room.Listen ("players/:id", this.OnPlayerChange);
 		room.Listen ("players/:id/:axis", this.OnPlayerMove);
 		room.Listen ("messages/:number", this.OnMessageAdded);
-        room.Listen ("roomname/:name", this.OnRoomNameAdded); 
+       // room.Listen ("roomname/:name", this.OnRoomNameAdded); 
 
 		room.OnData += (object sender, MessageEventArgs e) => Debug.Log(e.data);
 
