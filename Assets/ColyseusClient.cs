@@ -42,7 +42,7 @@ public class ColyseusClient : MonoBehaviour {
 		room.Listen ("players/:id", this.OnPlayerChange);
 		room.Listen ("players/:id/:axis", this.OnPlayerMove);
 		room.Listen ("messages/:number", this.OnMessageAdded);
-       // room.Listen ("roomname/:name", this.OnRoomNameAdded); 
+        room.Listen ("roomname/:name", this.OnRoomNameAdded); 
 
 		room.OnData += (object sender, MessageEventArgs e) => Debug.Log(e.data);
 
@@ -62,7 +62,7 @@ public class ColyseusClient : MonoBehaviour {
 			i++;
 
 			if (i % 50 == 0) {
-				room.Send("some_command");
+			//	room.Send("some_command");
 			}
 
 			yield return 0;
@@ -92,23 +92,24 @@ public class ColyseusClient : MonoBehaviour {
 	{
 		// Setup room first state
 		if (e.isFirstState) {
-
+            
             this.gameRoom = (GameRoom) e.room;
-            Debug.Log("e.room type of: " +  e.room.GetType());
+            Debug.Log("e.room type of: " +  e.room.GetType() + " :roomName: " + this.gameRoom.roomName );
 
-			IndexedDictionary<string, object> players = (IndexedDictionary<string, object>) e.state ["players"];
+			//IndexedDictionary<string, object> players = (IndexedDictionary<string, object>) e.state ["players"];
 
 			// trigger to add existing players 
-			foreach(KeyValuePair<string, object> player in players)
-			{
-				this.OnPlayerChange (new DataChange {
-					path = new Dictionary<string, string> {
-						{"id", player.Key}
-					},
-					operation = "add",
-					value = player.Value
-				});
-			}
+			//foreach(KeyValuePair<string, object> player in players)
+			//{
+            //    Debug.Log("OnUpdateHandler: key: " + player.Key + " : value : " + player.Value.ToString());
+				//this.OnPlayerChange (new DataChange {
+				//	path = new Dictionary<string, string> {
+				//		{"id", player.Key}
+				//	},
+				//	operation = "add",
+				//	value = player.Value
+				//});
+		//	}
 		}
 	}
 
