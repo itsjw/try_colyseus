@@ -23,6 +23,8 @@ public class ColyseusClient : MonoBehaviour {
 
 	// Use this for initialization
 	IEnumerator Start () {
+		//GameRoomSerializer g = new GameRoomSerializer();
+		//Json.DefaultSerializers.Add(g);
 
 		String uri = "ws://" + serverName + ":" + port;
 		client = new Client(uri);
@@ -42,7 +44,7 @@ public class ColyseusClient : MonoBehaviour {
 		room.Listen ("players/:id", this.OnPlayerChange);
 		room.Listen ("players/:id/:axis", this.OnPlayerMove);
 		room.Listen ("messages/:number", this.OnMessageAdded);
-        room.Listen ("roomname/:name", this.OnRoomNameAdded); 
+        room.Listen ("roomname/:roomname", this.OnRoomNameAdded); 
 
 		room.OnData += (object sender, MessageEventArgs e) => Debug.Log(e.data);
 
@@ -92,24 +94,23 @@ public class ColyseusClient : MonoBehaviour {
 	{
 		// Setup room first state
 		if (e.isFirstState) {
-            
             this.gameRoom = (GameRoom) e.room;
             Debug.Log("e.room type of: " +  e.room.GetType() + " :roomName: " + this.gameRoom.roomName );
 
 			//IndexedDictionary<string, object> players = (IndexedDictionary<string, object>) e.state ["players"];
 
-			// trigger to add existing players 
+			//// trigger to add existing players 
 			//foreach(KeyValuePair<string, object> player in players)
 			//{
-            //    Debug.Log("OnUpdateHandler: key: " + player.Key + " : value : " + player.Value.ToString());
-				//this.OnPlayerChange (new DataChange {
-				//	path = new Dictionary<string, string> {
-				//		{"id", player.Key}
-				//	},
-				//	operation = "add",
-				//	value = player.Value
-				//});
-		//	}
+   //             Debug.Log("OnUpdateHandler: key: " + player.Key + " : value : " + player.Value.ToString());
+			//	this.OnPlayerChange (new DataChange {
+			//		path = new Dictionary<string, string> {
+			//			{"id", player.Key}
+			//		},
+			//		operation = "add",
+			//		value = player.Value
+			//	});
+			//}
 		}
 	}
 
@@ -169,8 +170,8 @@ public class ColyseusClient : MonoBehaviour {
     void OnRoomNameAdded(DataChange change){
 
 		Debug.Log("OnRommNameAdded");
-		Debug.Log(change.path["name"]);
-		Debug.Log(change.value);
+		Debug.Log(change.path["roomname"]);
+        Debug.Log(change.value);
     }
 
 	void OnChangeFallback (PatchObject change)

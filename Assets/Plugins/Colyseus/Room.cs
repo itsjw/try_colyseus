@@ -194,7 +194,9 @@ namespace Colyseus
 /// </summary>
 public class GameRoom
 {
-
-    public string roomName;
+    //public GameRoom(string data){
+    //    roomName = data;
+    //}
+    public string roomName { get; set; }
 
 }

@@ -25,10 +25,14 @@ class ChatRoom extends Room {
   }
 
   requestJoin (options) {
-    console.log("request join!", options);
+
+    console.log("***request join***!", options);
 //
     console.log("players.length: "+Object.keys(this.state.players).length);
     console.log("clients.length: "+Object.keys(this.clients).length);
+
+
+    console.log("*** END OF Request Join ***");
 
     return Object.keys(this.state.players).length < this.options.maxClients;
 
@@ -39,21 +43,26 @@ class ChatRoom extends Room {
 
 
   onJoin (client) {
+
+  console.log("*** onJoin ***");
+
+
     console.log("client joined!", client.sessionId);
     console.log("client joined!", "Object.keys(this.state.clients).length: " + Object.keys(this.state.players).length);
 
 
     this.state.players[client.sessionId] = { x: 0, y: 0 };
-   //this.state.roomname.push("roomname" + Math.floor((Math.random() * 100) + 1));
 
-   var nameOfRoom = {
-    roomName : Object.keys(this.state.players).length
+    var roomname = {
+      roomName : 'a room passed as string'
 
-   }
+    }
+
+     // this.state.roomname.push ('a room passed as string');
+           this.state.roomname.push (roomname);
 
 
-   this.state.roomname.push(nameOfRoom);
-
+console.log("*** END Of onJoin");
   }
 
   onLeave (client) {
