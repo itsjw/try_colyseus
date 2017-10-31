@@ -9,7 +9,7 @@ class ChatRoom extends Room {
     this.setState({
       players: {},
       messages: [],
-      roomname: []
+      GameRoom: []
     });
   }
 
@@ -58,8 +58,13 @@ class ChatRoom extends Room {
 
     }
 
-     // this.state.roomname.push ('a room passed as string');
-           this.state.roomname.push (roomname);
+      var text = JSON.stringify (roomname);
+      //var myVar = JSON.parse(text);
+
+      console.log("stringify text: " + text);
+
+     //this.state.roomname.push ('a room passed as string');
+           this.state.GameRoom.push (text);
 
 
 console.log("*** END Of onJoin");

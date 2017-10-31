@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System.Reflection;
+using JsonFx;
 
 namespace Colyseus
 {
@@ -77,13 +78,14 @@ namespace Colyseus
     {
         public static object Deserialize(Type objectType, IndexedDictionary<string, object> state = null)
         {
+
             foreach (KeyValuePair<string, object> s in state)
             {
-                Debug.Log("Key: " + s.Key + " : value: " + s.Value);
+                Debug.Log("Key: " + s.Key + " : value: " + s.Value + " : objectType: " +objectType.ToString());
 
-                //if (s.Key == "roomname")
-                //{
-                    //Debug.Log("ROOM NAME");
+                if (s.Key == objectType.ToString())
+                {
+                    Debug.Log("ROOM NAME");
 
                     //from the debug log above - Key: roomname : value: System.Collections.Generic.List`1[System.Object]
                     // To use a generic.list with system object, this is how its done.ß
@@ -96,37 +98,32 @@ namespace Colyseus
                         {
                             Debug.Log(item.ToString());
 
+                            //Create generice object base on Type
+							//https://stackoverflow.com/questions/955331/creating-a-generic-object-based-on-a-type-variable
+							//Type type = objectType.MakeGenericType(objectType);
+                            var myObject = Activator.CreateInstance(objectType);
+
+                            Debug.Log("returned object");
+                          return  myObject = JsonFx.Json.JsonReader.Deserialize(item.ToString(), objectType);
+
                         }
                     }
-                //}
+                }
              
             }
 
-
-
-
-            //IndexedDictionary<string, object> name = (IndexedDictionary<string, object>)state["roomname"];
-            //foreach (KeyValuePair<string, object> n in name)
-            //{
-            //	Debug.Log("OnUpdateHandler: key: " + n.Key + " : value : " + n.Value.ToString());
-
-            //}
+            //Parts below are not necessary - only for testing System.IO.MemoryStream and MsgPack.
 
             var outputStream = new System.IO.MemoryStream();
-
 
             MsgPack.Serialize(state, outputStream);
 
             outputStream.Position = 0;
 
-            //  var room = MsgPack.Deserialize(objectType, outputStream);
-
             var room = MsgPack.Deserialize(objectType, outputStream);
 
             outputStream.Position = 0;
 
-
-            //TODO further work on this. We know the type. We can retrieve from it.q
             var test = MsgPack.Deserialize(state.GetType(), outputStream);
             Debug.Log("TEST: " + test.GetType());
 
@@ -153,7 +150,6 @@ namespace Colyseus
                     
             }
 
-            //Debug.Log("ROOM " + room.ToString());
             return room;
         }
 

@@ -44,7 +44,7 @@ public class ColyseusClient : MonoBehaviour {
 		room.Listen ("players/:id", this.OnPlayerChange);
 		room.Listen ("players/:id/:axis", this.OnPlayerMove);
 		room.Listen ("messages/:number", this.OnMessageAdded);
-        room.Listen ("roomname/:roomname", this.OnRoomNameAdded); 
+        room.Listen ("GameRoom/:room", this.OnRoomNameAdded); 
 
 		room.OnData += (object sender, MessageEventArgs e) => Debug.Log(e.data);
 
@@ -94,7 +94,9 @@ public class ColyseusClient : MonoBehaviour {
 	{
 		// Setup room first state
 		if (e.isFirstState) {
-            this.gameRoom = (GameRoom) e.room;
+			Debug.Log("OnUpdateHandler: e.isFirstState ");
+
+			this.gameRoom = (GameRoom) e.room;
             Debug.Log("e.room type of: " +  e.room.GetType() + " :roomName: " + this.gameRoom.roomName );
 
 			//IndexedDictionary<string, object> players = (IndexedDictionary<string, object>) e.state ["players"];
@@ -111,7 +113,11 @@ public class ColyseusClient : MonoBehaviour {
 			//		value = player.Value
 			//	});
 			//}
-		}
+        }else{
+			Debug.Log("OnUpdateHandler: e.isFirstState FALSE ");
+
+			this.gameRoom = (GameRoom)e.room;
+			Debug.Log("e.room type of: " + e.room.GetType() + " :roomName: " + this.gameRoom.roomName);        }
 	}
 
 	void OnPlayerChange (DataChange change)
@@ -170,7 +176,7 @@ public class ColyseusClient : MonoBehaviour {
     void OnRoomNameAdded(DataChange change){
 
 		Debug.Log("OnRommNameAdded");
-		Debug.Log(change.path["roomname"]);
+		Debug.Log(change.path["room"]);
         Debug.Log(change.value);
     }
 
