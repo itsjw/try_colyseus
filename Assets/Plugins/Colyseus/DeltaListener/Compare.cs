@@ -53,15 +53,23 @@ namespace Colyseus
 			for (int i = 0; i < oldKeys.Count; i++) 
 			{
 				var key = oldKeys [i];
-				if (obj.ContainsKey(key) && !(!obj.ContainsKey(key) && mirror.ContainsKey(key) && !(obj is List<object>)))
+				if (
+					obj.ContainsKey(key) && 
+					obj[key] != null &&
+					!(!obj.ContainsKey(key) && mirror.ContainsKey(key) && 
+					!(obj is List<object>))
+				)
 				{
 					var oldVal = mirror[key];
 					var newVal = obj[key];
 
+					var oldValType = oldVal.GetType ();
+					var newValType = newVal.GetType ();
+
 					if (
-						(oldVal as IEnumerable) != null && 
-						(oldVal as IEnumerable) != null && 
-						Object.ReferenceEquals(oldVal.GetType(), newVal.GetType())
+						!oldValType.IsPrimitive && oldValType != typeof(string) &&
+						!newValType.IsPrimitive && oldValType != typeof(string) && 
+						Object.ReferenceEquals(oldValType, newValType)
 					)
 					{
 						List<string> deeperPath = new List<string>(path);
@@ -125,11 +133,29 @@ namespace Colyseus
 					List<string> addPath = new List<string>(path);
 					addPath.Add((string) key);
 
+					var newVal = obj [key];
+					if (newVal != null) {
+						var newValType = newVal.GetType ();
+
+						// compare deeper additions
+						if (
+							!newValType.IsPrimitive && 
+							newValType != typeof(string)
+						) {
+							if (newVal is IDictionary) {
+								Generate(new IndexedDictionary<string, object>(), newVal as IndexedDictionary<string, object>, patches, addPath);
+
+							} else if (newVal is IList) {
+								Generate(new List<object>(), newVal as List<object>, patches, addPath);
+							}
+						}
+					}
+
 					patches.Add(new PatchObject
 					{
 						operation = "add",
 						path = addPath.ToArray(),
-						value = obj[key]
+						value = newVal
 					});
 				}
 			}

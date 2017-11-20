@@ -21,6 +21,38 @@ public class DeltaContainerTest {
 	}
 
 	[Test]
+	public void ListenAddString() {
+		var newData = GetRawData ();
+		newData ["some_string"] = "hello!";
+
+		var listenCalls = 0;
+		container.Listen ("some_string", (DataChange change) => {
+			listenCalls++;
+			Assert.AreEqual("add", change.operation);
+			Assert.AreEqual("hello!", change.value);
+		});
+
+		container.Set (newData);
+		Assert.AreEqual (1, listenCalls);
+	}
+
+	[Test]
+	public void ListenAddNull() {
+		var newData = GetRawData ();
+		newData ["null_new"] = null;
+
+		var listenCalls = 0;
+		container.Listen ("null_new", (DataChange change) => {
+			listenCalls++;
+			Assert.AreEqual("add", change.operation);
+			Assert.AreEqual(null, change.value);
+		});
+
+		container.Set (newData);
+		Assert.AreEqual (1, listenCalls);
+	}
+
+	[Test]
 	public void ListenAddRemove() {
 		var newData = GetRawData ();
 
@@ -78,6 +110,22 @@ public class DeltaContainerTest {
 	}
 
 	[Test]
+	public void ListenReplaceString() {
+		var newData = GetRawData ();
+		newData ["turn"] = "mutated";
+
+		var listenCalls = 0;
+		container.Listen ("turn", (DataChange change) => {
+			listenCalls++;
+			Assert.AreEqual(change.value, "mutated");
+		});
+
+		container.Set (newData);
+		Assert.AreEqual (1, listenCalls);
+	}
+
+
+	[Test]
 	public void ListenWithoutPlaceholder() {
 		var newData = GetRawData ();
 
@@ -121,12 +169,51 @@ public class DeltaContainerTest {
 		var listenCalls = 0;
 		container.Listen ("messages/:number", (DataChange change) => {
 			listenCalls++;
-			Assert.AreEqual("remove", change.operation);
-			Assert.AreEqual("2", change.path["number"]);
+			if (listenCalls == 1) {
+				Assert.AreEqual("remove", change.operation);
+				Assert.AreEqual("2", change.path["number"]);
+				Assert.AreEqual(null, change.value);
+
+			} else if (listenCalls == 2) {
+				Assert.AreEqual("replace", change.operation);
+				Assert.AreEqual("1", change.path["number"]);
+				Assert.AreEqual("three", change.value);
+
+			} else if (listenCalls == 3) {
+				Assert.AreEqual("replace", change.operation);
+				Assert.AreEqual("0", change.path["number"]);
+				Assert.AreEqual("two", change.value);
+			}
 		});
 
 		container.Set (newData);
-		Assert.AreEqual (1, listenCalls);
+		Assert.AreEqual (3, listenCalls);
+	}
+
+	[Test]
+	public void ListenInitialState() {
+		var container = new DeltaContainer (new IndexedDictionary<string, object>());
+		var listenCalls = 0;
+
+		container.Listen ("players/:id/position/:attribute", (DataChange change) => {
+			listenCalls++;
+		});
+
+		container.Listen ("turn", (DataChange change) => {
+			listenCalls++;
+		});
+
+		container.Listen ("game/turn", (DataChange change) => {
+			listenCalls++;
+		});
+
+		container.Listen ("messages/:number", (DataChange change) => {
+			listenCalls++;
+		});
+
+		container.Set (GetRawData ());
+
+		Assert.AreEqual (9, listenCalls);
 	}
 
 	protected IndexedDictionary<string, object> GetRawData () {
@@ -152,6 +239,8 @@ public class DeltaContainerTest {
 			{"turn", 0}
 		}));
 		data.Add ("players", players);
+		data.Add ("turn", "none");
+		data.Add ("null", null);
 		data.Add ("messages", new List<object> { "one", "two", "three" });
 		return data;
 	}
